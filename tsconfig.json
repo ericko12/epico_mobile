@@ -1,0 +1,54 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "webworker"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "features/common/domain/types/**/*.d.ts",
+    "worker/index.ts",
+    "features/promotions/infrastructure/ui/Modal/modalProductsPromotions",
+    "features/common/infrastructure/api",
+    "features/promotions/infrastructure/ui/Modal/modalScalesInfo",
+    "features/promotions/infrastructure/ui/promotionModalTableRow",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "public/sw.js",
+    "__tests__/**/*"
+  ],
+  "types": [
+    "jest",
+    "@testing-library/jest-dom"
+  ]
+}

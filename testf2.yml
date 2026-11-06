@@ -1,0 +1,28 @@
+
+version: '3.8'
+
+services:
+  web:
+    image: ${IMAGE_NAME}
+    env_file:
+      - ./enviroments/.env.test
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 500m
+      replicas: 1
+      labels:
+        traefik.enable: 'true'
+        traefik.http.routers.epicotestf2.rule: Host(`epico-f2-movil.apymsa-testsvr.apymsa.com.mx`) || Host(`epico-f2.apymsa-testsvr.apymsa.com.mx`)
+        traefik.http.routers.epicotestf2.entrypoints: https
+        traefik.http.routers.epicotestf2.tls: 'true'
+        traefik.http.services.epicotestf2.loadbalancer.server.port: 3000
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
+   
+

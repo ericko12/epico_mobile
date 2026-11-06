@@ -1,0 +1,27 @@
+
+version: '3.8'
+
+services:
+  web:
+    image: ${IMAGE_NAME}
+    env_file:
+      - ./enviroments/.env.uat
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 500m
+      labels:
+        traefik.enable: 'true'
+        traefik.http.routers.epicouat.rule: Host(`epico-movil.apymsa-uatsvr.apymsa.com.mx`) || Host(`epico.apymsa-uatsvr.apymsa.com.mx`)
+        traefik.http.routers.epicouat.entrypoints: https
+        traefik.http.routers.epicouat.tls: 'true'
+        traefik.http.services.epicouat.loadbalancer.server.port: 3000
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
+   
+

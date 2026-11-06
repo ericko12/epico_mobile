@@ -1,0 +1,15 @@
+variables:
+    STACK_NAME: epico
+    PROJECT_FOLDER: /
+    IMAGE_NAME: epico
+stages:
+    - containerizeImage
+    - deployment
+    - imageRetaging
+    - deployProduction
+
+
+include:
+    - local: '/config/gitlab-ci/containerize.yml'
+    - local: '/config/gitlab-ci/deployment.yml'
+    - local: '/config/gitlab-ci/release.yml'

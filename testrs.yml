@@ -1,0 +1,43 @@
+
+version: '3.8'
+
+services:
+  web:
+    image: ${IMAGE_NAME}
+    env_file:
+      - ./enviroments/.env.test
+    environment:
+      # Lista de secrets a cargar (separados por comas)
+      # Agrega más secrets aquí cuando los necesites: credentials_gmaps_smc4,shared_database,shared_api_keys
+      - DOCKER_SECRETS=${DOCKER_SECRETS:-credentials_gmaps_smc4}
+    secrets:
+      - credentials_gmaps_smc4
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 500m
+      replicas: 1
+      labels:
+        traefik.enable: 'true'
+        traefik.http.routers.epicosr.rule: Host(`epico2-movil.apymsa-testsvr.apymsa.com.mx`) || Host(`epico2.apymsa-testsvr.apymsa.com.mx`)
+        traefik.http.routers.epicosr.entrypoints: https
+        traefik.http.routers.epicosr.tls: 'true'
+        traefik.http.services.epicosr.loadbalancer.server.port: 3000
+    networks:
+      - backend
+secrets:
+  credentials_gmaps_smc4:
+    external: true
+  # Agrega más secrets aquí cuando los necesites:
+  # shared_database:
+  #   external: true
+  # shared_api_keys:
+  #   external: true
+
+
+networks:
+  backend:
+    external: true
+   
+

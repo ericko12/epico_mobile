@@ -1,0 +1,23 @@
+
+version: '3.8'
+
+services:
+  web:
+    image: ${IMAGE_NAME}
+    env_file:
+      - ./enviroments/.env.test
+    deploy:
+      labels:
+        traefik.enable: 'true'
+        traefik.http.routers.epicomb.rule: Host(`epico-mb-movil.apymsa-testsvr.apymsa.com.mx`) || Host(`epico-mb.apymsa-testsvr.apymsa.com.mx`)
+        traefik.http.routers.epicomb.entrypoints: https
+        traefik.http.routers.epicomb.tls: 'true'
+        traefik.http.services.epicomb.loadbalancer.server.port: 3000
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
+   
+

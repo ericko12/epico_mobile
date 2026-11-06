@@ -1,0 +1,52 @@
+FROM node:22-alpine AS dependencies
+RUN apk add --no-cache libc6-compat
+WORKDIR /home/app
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm i --force
+
+FROM node:22-alpine AS builder
+WORKDIR /home/app
+
+COPY --from=dependencies /home/app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED 1
+RUN npm run build:test
+
+FROM node:22-slim AS runner
+
+RUN apt-get update && apt-get install -y --no-install-recommends jq && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /home/app
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV TZ="Etc/GMT+6"
+
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends ca-certificates \
+	&& rm -rf /var/lib/apt/lists/*
+
+
+# COPY --from=builder /home/app/README.md .
+COPY --from=builder /home/app/public /home/app/standalone/public
+COPY --from=builder /home/app/.next/standalone ./standalone
+COPY --from=builder /home/app/.next/static /home/app/standalone/.next/static
+
+# Copiar script de carga de secrets
+COPY scripts/load-secrets.sh /home/app/scripts/load-secrets.sh
+RUN chmod +x /home/app/scripts/load-secrets.sh
+
+ARG CERT_FILE=certs/Exodus_CA_5.crt
+COPY ${CERT_FILE} /usr/local/share/ca-certificates/gateway-ca.crt
+RUN update-ca-certificates
+
+ENV NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/gateway-ca.crt
+
+
+ENV HOSTNAME "0.0.0.0"
+
+RUN chown -R node:node /home/app
+USER node
+
+# Script to load Docker secrets into environment variables
+ENTRYPOINT ["/home/app/scripts/load-secrets.sh"]
+CMD ["node", "./standalone/server.js"]
